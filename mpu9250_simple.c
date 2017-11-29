@@ -94,14 +94,38 @@ int read_register(int fd, char reg, char* rx_buffer, int count) {
 	return 0;
 }
 
+int get_accel_temp_gyro(int fd, int16_t* accel, int16_t* temp, int16_t* gyro) {
+	int i;
+	int ret;
+	uint8_t regNumber;
+	char readBuf[14];
+	char rx_buffer[2] = {0, 0};
+
+	for (i=0; i<14; i++) {
+		regNumber = i + 0x3b;
+		ret = read_register(fd, regNumber, rx_buffer, 2);
+		readBuf[i] = rx_buffer[1];
+		//printf("reg 0x%x: 0x%x\n", regNumber, rx_buffer[1]);
+	}
+
+	accel[0] = (int16_t)((readBuf[0] << 8) | readBuf[1]);
+	accel[1] = (int16_t)((readBuf[2] << 8) | readBuf[3]);
+	accel[2] = (int16_t)((readBuf[4] << 8) | readBuf[5]);
+
+	*temp = (int16_t)((readBuf[6] << 8) | readBuf[7]);
+
+	gyro[0] = (int16_t)((readBuf[8] << 8) | readBuf[9]);
+	gyro[1] = (int16_t)((readBuf[10] << 8) | readBuf[11]);
+	gyro[2] = (int16_t)((readBuf[12] << 8) | readBuf[13]);
+
+	return 0;
+}
+
 
 int main(int argc, char *argv[]) {
 	int ret = 0;
 	int fd;
-	int i;
 
-	uint8_t regNumber;
-	char readBuf[14];
 	int16_t accel[3];
 	int16_t temp;
 	int16_t gyro[3];
@@ -158,28 +182,17 @@ int main(int argc, char *argv[]) {
 	printf("rx[0]: 0x%x\n", rx_buffer[0]);
 	printf("rx[1]: 0x%x\n", rx_buffer[1]);
 
+	while(1) {
 
-	for (i=0; i<14; i++) {
-		regNumber = i + 0x3b;
-		ret = read_register(fd, regNumber, rx_buffer, 2);
-		readBuf[i] = rx_buffer[1];
-		//printf("reg 0x%x: 0x%x\n", regNumber, rx_buffer[1]);
+		get_accel_temp_gyro(fd, accel, &temp, gyro);
+
+		printf("accel, temp, gyro: %d, %d, %d, %d, %d, %d, %d\n",
+			accel[0], accel[1], accel[2],
+			temp,
+			gyro[0], gyro[1], gyro[2]);
+
+		usleep(10000);
 	}
-
-	accel[0] = (int16_t)((readBuf[0] << 8) | readBuf[1]);
-	accel[1] = (int16_t)((readBuf[2] << 8) | readBuf[3]);
-	accel[2] = (int16_t)((readBuf[4] << 8) | readBuf[5]);
-
-	temp = (int16_t)((readBuf[6] << 8) | readBuf[7]);
-
-	gyro[0] = (int16_t)((readBuf[8] << 8) | readBuf[9]);
-	gyro[1] = (int16_t)((readBuf[10] << 8) | readBuf[11]);
-	gyro[2] = (int16_t)((readBuf[12] << 8) | readBuf[13]);
-
-
-	printf("accel, xyz: %d, %d, %d\n", accel[0], accel[1], accel[2]);
-	printf("temp: %d\n", temp);
-	printf("gyro, xyz: %d, %d, %d\n", gyro[0], gyro[1], gyro[2]);
 
 	close(fd);
 	return ret;
