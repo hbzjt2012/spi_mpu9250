@@ -2,9 +2,6 @@
 /*
  * This is for use with the MPU-9250 IMU Chip, SPI interface
  *
- * Mode is 0,0
- * Max SPI frequency is 1 MHz
- *
  */
 
 
@@ -23,15 +20,9 @@ static void pabort(const char *s) {
 	abort();
 }
 
-static const char *device = "/dev/spidev1.0";
-static uint8_t mode = 0;
 static uint8_t bits = 8;
 static uint32_t speed = 500000;
 static uint16_t delay = 1;
-
-#define MPU9250_ADDRESS0            0x68
-#define MPU9250_ADDRESS1            0x69
-#define MPU9250_ID                  0x71
 
 
 int read_register(int fd, char reg, char* rx_buffer, int count) {

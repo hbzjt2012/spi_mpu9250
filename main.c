@@ -66,35 +66,6 @@ int read_write(int fd) {
 	return 0;
 }
 
-int read_register(int fd, char reg, char* rx_buffer, int count) {
-	char *tx_buffer;
-	int ret;
-
-	tx_buffer = (char *)calloc(count, sizeof(char));
-	if (tx_buffer == 0) {
-		pabort("failed to malloc tx_buffer");
-	}
-
-	tx_buffer[0] = 0x80 | reg; // setting msb to 1 makes this a "read" operation
-
-	struct spi_ioc_transfer tr = {
-		.tx_buf = (unsigned long)tx_buffer,
-		.rx_buf = (unsigned long)rx_buffer,
-		.len = count,
-		.delay_usecs = delay,
-		.speed_hz = speed,
-		.bits_per_word = bits,
-	};
-
-	ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-	if (ret < 1) {
-		pabort("can't send spi message");
-	}
-
-	free(tx_buffer);
-
-	return 0;
-}
 */
 
 
