@@ -32,42 +32,7 @@ static uint8_t bits = 8;
 static uint32_t speed = 500000;
 static uint16_t delay = 1;
 
-#define MPU9250_ADDRESS0            0x68
-#define MPU9250_ADDRESS1            0x69
 #define MPU9250_ID                  0x71
-
-/*
-int read_write(int fd) {
-	int ret;
-
-	//uint8_t read_address = 0x80 | MPU9250_ADDRESS0;
-	uint8_t read_address = 0x80 | 0x75; // gyro+accel WHO_AM_I register
-
-	uint8_t tx[2] = {read_address, 0};
-	uint8_t rx[2] = {0, 0};
-
-	struct spi_ioc_transfer tr = {
-		.tx_buf = (unsigned long)tx,
-		.rx_buf = (unsigned long)rx,
-		//.len = DATA_SIZE,
-		.len = 2,
-		.delay_usecs = delay,
-		.speed_hz = speed,
-		.bits_per_word = bits,
-	};
-
-	ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-	if (ret < 1) {
-		pabort("can't send spi message");
-	}
-
-	printf("rx[0]: %d\n", rx[0]);
-	printf("rx[1]: %d\n", rx[1]);
-
-	return 0;
-}
-
-*/
 
 
 int main(int argc, char *argv[]) {
