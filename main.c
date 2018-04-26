@@ -15,6 +15,7 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <sys/time.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
@@ -73,6 +74,7 @@ int main(int argc, char *argv[]) {
 	int ret = 0;
 	int fd;
 
+	struct timeval tv;
 	int16_t accel[3];
 	int16_t temp;
 	int16_t gyro[3];
@@ -132,8 +134,10 @@ int main(int argc, char *argv[]) {
 	while(1) {
 
 		get_accel_temp_gyro(fd, accel, &temp, gyro);
+		gettimeofday(&tv, NULL);
 
-		printf("accel, temp, gyro: %d, %d, %d, %d, %d, %d, %d\n",
+		printf("%ld.%06ld|atg:%d,%d,%d,%d,%d,%d,%d\n",
+			tv.tv_sec, tv.tv_usec,
 			accel[0], accel[1], accel[2],
 			temp,
 			gyro[0], gyro[1], gyro[2]);
